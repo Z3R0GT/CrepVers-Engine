@@ -1,4 +1,5 @@
 #1.0 --- 10/27/2024 || 27/10/2024 By: Z3R0_GT
+#DOCUMENTACIÓN VERSION: 1.0
 from os import listdir, path, getcwd, chdir, remove, mkdir
 chdir(getcwd()+"/core")
 
@@ -522,12 +523,22 @@ def init() -> dict[str]:
 MAINLY_ARCH:dict[str] = init()
 #LINKER
 chdir(ROOT_GEN+"/out")
-def pather(dirs:list[str], 
+def pather(files:list[str], 
             title:str,
             msg:str,
             abosolute:str,
             variant:str="choice",
             info:dict[str]=...):
+    """crea archivo... en teoria
+
+    Args:
+        files (list[str]): listado de archivos
+        title (str): Texto central
+        msg (str): mensahe
+        abosolute (str): nombre absoluto
+        variant (str, optional): nombre que aparece luego de _ . Defaults to "choice".
+        info (dict[str], optional): ¿para que sirve?. Defaults to ....
+    """
     base_c = BASE_GEN.copy()
     base_c[base_c.index("TITLE_HERE")] = f"<title>{title} {variant}?</title>"
     base_msg = BASE_TXT[0].copy()
@@ -536,7 +547,7 @@ def pather(dirs:list[str],
         
         
     tmp = []
-    for name in dirs:
+    for name in files:
         if name[0] == "_":
             btn_c = BASE_BTN[2].copy()
             btn_c[btn_c.index("TEXT_HERE")] = name[1:]
@@ -554,9 +565,7 @@ def pather(dirs:list[str],
         
     base_c[base_c.index("BUTTON_HERE")] = mk_str(tmp)
     base_c[base_c.index("BACK_HERE")] = mk_str(BASE_BTN[0].copy())
-    if info == ...:
-        v = variant
-    else:
+    if not info == ...:
         try:
             n = list(info.keys()).index(variant)-1
             if n < 0:
@@ -564,6 +573,9 @@ def pather(dirs:list[str],
             v = list(info.keys())[n]
         except IndexError:
             v = variant
+    else:
+        v = variant
+        
     try:
         remove(getcwd()+f"/{abosolute}_{v}.html")
     except FileNotFoundError:
@@ -573,7 +585,14 @@ def pather(dirs:list[str],
 
 def create_path(key, info:dict[str, dict[str]], 
                 name_absolute:str, file_name:str):
-        
+    """¿crea directorios? puede ser... es recursivo y complejo
+
+    Args:
+        key (_type_): nombre del menu
+        info (dict[str, dict[str]]): lista general de nombres para el menu
+        name_absolute (str): nombre abosoluto (especie)
+        file_name (str): nombre de arhivo a crear
+    """
     if type(info[key]) == type(""):
         pather(list(filter(path.isdir, listdir())), name_absolute, info[key], file_name, key, info)
     elif type(info[key]) == type({}):
@@ -602,6 +621,8 @@ def create_path(key, info:dict[str, dict[str]],
                 
 
 def saver():
+    """Función para generar los menus de species y choice (sean descritos en desc.json)
+    """
     from json import load
     info:dict[str, dict[str]] = load(open(ROOT_GEN+"/data/desc.json", "r"))
 
