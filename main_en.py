@@ -338,6 +338,7 @@ def compiled(info_generic:dict[str, list[str]],
         ###################################
         # HEADER
         ###################################
+        base_c = BASE_STO.copy()
         
         base_c[base_c.index("TITLE_HERE")] = f"<title> {[info_generic["path"] if not "secret" in info_generic["path"] else info_generic["path"][1]][0] if info_generic.__contains__("path") else info_generic["kind"]} </title>"
         base_c[base_c.index("NAME_AUTHOR_HERE")] = f"<i>Author(s): {mk_str([i+", " for i in info_generic["author"]])}</i>\n"    
@@ -345,7 +346,6 @@ def compiled(info_generic:dict[str, list[str]],
         ###################################
         # BASE ZONE
         ###################################
-        base_c = BASE_STO.copy()
         
         dialog = to_paste[name]["dialog"]
         
