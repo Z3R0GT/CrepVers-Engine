@@ -1,0 +1,45 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="
+https://
+BASE_HERE
+/style.css">
+<link rel="icon" href="https://
+BASE_HERE
+/data/img/ui/icon.png" type="image/png" sizes="16x16 32x32">
+TITLE_HERE
+<p align="center"><a href="https://
+BASE_HERE
+/index.html"><img src="
+https://
+BASE_HERE
+/data/img/ui/creatureverse.png"alt="CreatureVerse" width="25%" /></a></p>
+<meta content="CreatureVerse Beta" property="og:title" />
+<meta content="CreatureVerse is an interactive story driven narrative based solely on the choices you make here." property="og:description" />
+<meta content="https://
+BASE_HERE
+" property="og:url" />
+<meta content="https://
+BASE_HERE
+/data/img/ui/icon.png" property="og:image" />
+<meta content="#B40404" data-react-helmet="true" name="theme-color" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<div class="nsfw_align">
+<label class="switch">
+<input type="checkbox" id="togBtn">
+<div class="slider round"></div>
+</label>
+</div>
+
+TEXT_HERE
+
+BUTTON_HERE
+
+BACK_HERE
+
+<script type="text/javascript" src="https://
+BASE_HERE
+/js/nsfw.js"></script>
+</body>
+</html>
