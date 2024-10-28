@@ -7,6 +7,7 @@ chdir(getcwd()+"/core")
 BASE_URL = "www.creatureverse.net" #BASE DEL SITIO WEB A IMPORTAR
 ROOT_GEN = getcwd()                #DIRECTORIO GENERICO
 DEBUG = True                       #MODO (ignora o no archivos)
+OUT_NAME_PATH = "out"              #CARPETA DE SALIDA
 
 ### CONFIGURACIONES DEL COMPILADOR
 ## CONFIGURACIÓN DE SINTAXIS
@@ -324,7 +325,7 @@ def eval_secret(line:list[str]) -> list[str]:
             
             #en caso ya no existan más..... "más"
             try:
-                paste = f'<a href="secrets/{label[0].replace("-", "/")+".html"}" class="hidden-link"> {text_to[0]} </a>'
+                paste = f'<a href="secret/{label[0].replace("-", "/")+".html"}" class="hidden-link"> {text_to[0]} </a>'
                 bef =  line[line.index(text)][:text_to[1]-1]
                 aft =  line[line.index(text)][label[2]+1:len(line[line.index(text)])]
                 final = bef+paste+aft
@@ -406,15 +407,15 @@ def compiled(info_generic:dict[str, list[str]],
             labe = get_text_rgn(i, "()")[0].replace("-", "/")
             #NOTE: aqui se pueden extender para agregar más botones/palabras
             # reservadas
+            btn_c = BASE_BTN[1].copy()
             match labe:
                 case "SOON":
                     btn_c = BASE_BTN[2].copy()
                 case "RICK":
                     btn_c[btn_c.index("LINK_HERE")] = f'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 case "EXIT":
-                    ...
+                    btn_c[btn_c.index("LINK_HERE")] = f"https://{BASE_URL}/data/species.html"
                 case _:
-                    btn_c = BASE_BTN[1].copy()
                     btn_c[btn_c.index("LINK_HERE")] = f'"{labe}.html"'
             
             btn_c[btn_c.index("TEXT_HERE")] = text
@@ -488,7 +489,7 @@ def init() -> dict[str]:
             
             #NOTE: apartir de este punto, se asume que ya el archivo
             # a sido compilado, ahora viene solo pegar toda la información
-            chdir(mk_dir(ROOT_GEN, "out"))
+            chdir(mk_dir(ROOT_GEN, OUT_NAME_PATH))
 
             chdir(mk_dir(getcwd(), to_compile))
             chdir(mk_dir(getcwd(), file.split("-")[0]))
@@ -522,7 +523,7 @@ def init() -> dict[str]:
 
 MAINLY_ARCH:dict[str] = init()
 #LINKER
-chdir(ROOT_GEN+"/out")
+chdir(ROOT_GEN+"/"+OUT_NAME_PATH)
 def pather(files:list[str], 
             title:str,
             msg:str,

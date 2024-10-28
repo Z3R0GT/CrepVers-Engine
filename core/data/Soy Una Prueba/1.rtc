@@ -6,7 +6,7 @@ DIALOG main
     bueno, lo anterior era una locura... puedes activar otra clase de cosas aqui
     por ejemplo... tienes [un texto secreto aqui](mainSecret)
 CHOICE main
-    [Hazme click!](second)
+    [Hazme click!](EXIT)
 
 DIALOG second
     #SFW
