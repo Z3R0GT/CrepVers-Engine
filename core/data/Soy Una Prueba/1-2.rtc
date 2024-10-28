@@ -1,0 +1,8 @@
+GEN=Male
+KIND=Indoraptor
+PATH=lugar
+
+DIALOG literalmente
+    si.. parece funcionar
+CHOICE literalmente
+    [sos joto](secret-mainSecret)

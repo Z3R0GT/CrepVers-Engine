@@ -1,0 +1,11 @@
+GEN=Male
+KIND=Indoraptor
+AUTHOR=Sky
+
+DIALOG Test222
+    #SFW
+    This is a test1.
+    #NSFW
+    This is NSFW1.
+CHOICE Test222
+    [Test2](Test2)

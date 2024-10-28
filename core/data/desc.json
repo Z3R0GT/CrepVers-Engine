@@ -1,0 +1,9 @@
+{
+    "species":"Choose your species...",
+
+    "Soy Una Prueba":{
+        "choice": "What story path do you want?",
+        "gender": "What gender are you?",
+        "age":    "How old are you?"
+    }
+}

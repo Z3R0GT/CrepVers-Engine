@@ -1,0 +1,13 @@
+GEN=Male
+KIND=Indoraptor
+PATH=secret
+
+DIALOG mainSecret
+    bueno... al momento no existe una forma de regresar XDD
+CHOICE mainSecret
+    [continuamos?](no)
+
+DIALOG no
+    uwu
+CHOICE no
+    [f](f)

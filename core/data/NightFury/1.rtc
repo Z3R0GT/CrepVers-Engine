@@ -1,0 +1,23 @@
+GEN=Male
+KIND=Indoraptor
+AUTHOR=Sky
+
+DIALOG Test1
+    #SFW
+    This is a test1.
+    #NSFW
+    This is NSFW1.
+CHOICE Test1
+    [Test2](Test2)
+
+DIALOG Test2
+    #SFW
+    This is a test2.
+CHOICE Test2
+    [Test1](Test1)
+
+DIALOG Test3
+    #SFW
+    This is final test.
+CHOICE Test3
+    [Test2](Test2)
