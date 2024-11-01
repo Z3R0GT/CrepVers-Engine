@@ -1,6 +1,6 @@
 #1.0 --- 10/27/2024 || 27/10/2024 By: Z3R0_GT
 #DOCUMENTACIÓN VERSION: 1.0
-from os import listdir, path, getcwd, chdir, remove, mkdir
+from os import listdir, path, getcwd, chdir, remove, mkdir, system
 chdir(getcwd()+"/core")
 
 #CONFIGURACIÓN DEL SISTEMA
@@ -73,6 +73,14 @@ def get_count(base:list[str], names:list[str]) -> bool:
             a.append(True)
             
     return True if a.count(False) != 0 else False
+
+def get_key(base:dict[str], variant:str, need_pres:bool=False)->str:
+    base:list = list(base.keys())
+    zone = base.index(variant)
+    try:
+        return base[zone] if need_pres == True else base[zone+1]
+    except IndexError:
+        return base[zone]
     
 def del_jump(lines:list[str]) -> list[str]:
     """Elimina caracter de salto de linea de la lista actual
@@ -124,6 +132,9 @@ def mk_str(base:list[str])->str:
         a+=i
     return a
 
+def mk_str_under(absolute:str, variant:str, default="") -> str:
+    return f"/{absolute}_{variant}" if variant.replace(" ","") != "" else f"/{absolute}" if default == "" else f"/{absolute}_{default}"
+
 #### CUSTOM
 def check_count(base:list[str], names:list[str]) -> bool:
     """Verifica si la base aún existe una secuencia
@@ -173,7 +184,7 @@ def check_secuence(base:list[str], secuence:list[str]) -> bool:
         return True
     except ValueError:
         return False    
-    
+
 def check_all(base:list[str], secuence:list[str]):
     """Hace una verificación de la secuencia y el contador 
 
@@ -241,7 +252,7 @@ def compiler(file:list[str]) -> list[dict[str, list[str]]]:
             raise TypeError(f"Nombres diferente o equivocados, linea dialog: {dialog[i]} linea choice: {dialog[i+1]} (aproximadamente)")
         else:
             info[file[dialog[i]].split(" ")[1] ] = {"dialog":[],
-                                                     "choice":[],}
+                                                    "choice":[],}
     #3->Verifica que existan las palabras obligatorias
     parser = get_name(file[:dialog[0]])
     for i in WORDS_MUST:
@@ -337,8 +348,8 @@ def eval_secret(line:list[str]) -> list[str]:
     return [i+"<br>" for i in line]
 
 def compiled(info_generic:dict[str, list[str]], 
-             to_paste:dict[str, list[str]]
-             ) -> dict[list[str]]:
+            to_paste:dict[str, list[str]]
+            ) -> dict[list[str]]:
     """Usa la información transferida desde compiler para pegar dentro de la plantilla BASE_STO
 
     Args:
@@ -446,21 +457,27 @@ BASE_TXT = [del_jump(open(ROOT_GEN+f"/template/text/{i}").readlines()) for i in 
 #### COMPILADOR
 ## CONFIGURACIÓN DE COMPILADOR
 chdir(ROOT_GEN+"/data")
-
+FL_TO_COMPILE = list(filter(path.isdir, listdir()))
 def init() -> dict[str]:
     """Función para empezar el programa
-
     Returns:
         dict[str]: representación por archivo a guardar
     """
-    main:dict[str] = {}
+    main:dict[dict[str]] = {}
     
     #lista todos los archivos actuales dentro de DATA
-    for to_compile in list(filter(path.isdir, listdir())):
+    for to_compile in FL_TO_COMPILE:
+        if to_compile[0] == "_":
+            to_compile = to_compile[1:]
+        main[to_compile] = {}
+        
         chdir(getcwd()+"/"+to_compile)
         all_files = list(filter(path.isfile, listdir()))
-        
+        if not "base.info" in all_files:
+            open(getcwd()+"/base.info", "w").writelines(["VERSION=1.0", "AUTHOR=Anonymus"])
+            
         info = get_name(del_jump(open(getcwd()+"/"+get_file_extends(all_files, "info")[0], "rt").readlines()))
+        
         #ignora :v
         if ".ignore" in all_files and info["version"] == del_jump(open(getcwd()+"/.ignore", "rt").readlines())[0]:
             if not DEBUG:
@@ -490,7 +507,6 @@ def init() -> dict[str]:
             #NOTE: apartir de este punto, se asume que ya el archivo
             # a sido compilado, ahora viene solo pegar toda la información
             chdir(mk_dir(ROOT_GEN, OUT_NAME_PATH))
-
             chdir(mk_dir(getcwd(), to_compile))
             chdir(mk_dir(getcwd(), file.split("-")[0]))
             
@@ -509,7 +525,7 @@ def init() -> dict[str]:
                 for name in info_file["path"]:
                     chdir(mk_dir(getcwd(), name))
             #crea el nombre el archivo
-            main[name if info_file.__contains__("path") else info_file["kind"]] = list(files_to_paste.keys())[0]
+            main[to_compile][name if info_file.__contains__("path") else info_file["kind"]] = list(files_to_paste.keys())[0]
             
             for mn in files_to_paste:
                 open(getcwd()+"/"+mn+".html", "w").writelines(files_to_paste[mn])
@@ -521,121 +537,140 @@ def init() -> dict[str]:
         chdir(ROOT_GEN+"/data")
     return main
 
-MAINLY_ARCH:dict[str] = init()
+#MAINLY_ARCH:dict[str] = init()
 #LINKER
-chdir(ROOT_GEN+"/"+OUT_NAME_PATH)
-def pather(files:list[str], 
-            title:str,
-            msg:str,
-            abosolute:str,
-            variant:str="choice",
-            info:dict[str]=...):
-    """crea archivo... en teoria
+#
 
-    Args:
-        files (list[str]): listado de archivos
-        title (str): Texto central
-        msg (str): mensahe
-        abosolute (str): nombre absoluto
-        variant (str, optional): nombre que aparece luego de _ . Defaults to "choice".
-        info (dict[str], optional): ¿para que sirve?. Defaults to ....
-    """
+from random import randint
+BAN = ["child", "adult", "young"]
+BAM = ["mainBase", "pather", "uw"]
+MAIN:dict[dict[str]] = {}
+
+for i in FL_TO_COMPILE:
+    if i[0] == "_":
+        i = i[1:]
+    MAIN[i] = {}
+    for im in BAN:
+        MAIN[i][im] = BAM[randint(0, len(BAM)-1)]
+        
+
+def parser_file(files:list[str],
+                title:str,
+                desc:str,
+                variant_file:str|list[str], 
+                variant:str="",
+                variant_main:dict[str]=...,
+                variant_base:dict[str]=...):
     base_c = BASE_GEN.copy()
-    base_c[base_c.index("TITLE_HERE")] = f"<title>{title} {variant}?</title>"
     base_msg = BASE_TXT[0].copy()
-    base_msg[base_msg.index("TEXT_HERE")] = msg
+    base_c[base_c.index("TITLE_HERE")] = f"<title>{title}?</title>"
+    
+    base_msg[base_msg.index("TEXT_HERE")] = desc
     base_c[base_c.index("TEXT_HERE")]  = mk_str(base_msg)
-        
-        
-    tmp = []
-    for name in files:
-        if name[0] == "_":
-            btn_c = BASE_BTN[2].copy()
-            btn_c[btn_c.index("TEXT_HERE")] = name[1:]
-        else:
+    
+    info_connt = []
+    info_text  = []
+    name = mk_str_under(title, variant)+".html"
+    buttons_tmp = []
+    c=0
+    for buttons in files:
+        if not buttons[0] == "_":
             btn_c = BASE_BTN[1].copy()
-            btn_c[btn_c.index("TEXT_HERE")] = f"{variant} {name}"
-            if name in MAINLY_ARCH:
-                lnk = f'"{name}/{MAINLY_ARCH[name]}'
+            if buttons[:3] == "def":
+                txt = "default"
+                nam = buttons[3:]
             else:
-                lnk = f'"{name}/{name}_{variant}'
-                        
-            lnk+='.html"'
+                txt = f"{variant_file if type(variant_file) != type([]) else variant_file[c]} {buttons}"            
+                nam = buttons
+            btn_c[btn_c.index("TEXT_HERE")] = txt
+
+            if variant_main != ... and nam in variant_main:
+                lnk = f'"{nam}/{variant_main[nam]}'
+                
+            elif type(variant_file) == type([]):
+                sel = variant_file[c]
+                lnk = f'"{buttons}{mk_str_under(buttons, get_key(variant_base, sel) if variant_base != ... else sel, "choice")}'
+                c+=1
+            
+            else:
+                lnk = f'"{buttons}{mk_str_under(buttons, get_key(variant_base, variant_file) if variant_base != ... else variant_file, "choice")}'
+
+            lnk +='.html"'
+            info_connt.append(lnk)
             btn_c[btn_c.index("LINK_HERE")] = lnk
-        tmp.append(mk_str(btn_c)+"\n")
+        else:
+            btn_c = BASE_BTN[2].copy()
+            txt = buttons[1:]
+            btn_c[btn_c.index("TEXT_HERE")] = txt
         
-    base_c[base_c.index("BUTTON_HERE")] = mk_str(tmp)
-    base_c[base_c.index("BACK_HERE")] = mk_str(BASE_BTN[0].copy())
-    if not info == ...:
-        try:
-            n = list(info.keys()).index(variant)-1
-            if n < 0:
-                n = 0
-            v = list(info.keys())[n]
-        except IndexError:
-            v = variant
-    else:
-        v = variant
-        
+        info_text.append(txt)
+
+        buttons_tmp.append(mk_str(btn_c)+"\n")
+
+    base_c[base_c.index("BUTTON_HERE")] = mk_str(buttons_tmp)
+    base_c[base_c.index("BACK_HERE")]   = mk_str(BASE_BTN[0].copy())
+    
+    
+    #print("END FILE = ", name)
+    #print("DESC FILE = ", desc)
+    #print("CONNECTIONS = ", info_connt)
+    #print("TEXT = ", info_text)
+    
     try:
-        remove(getcwd()+f"/{abosolute}_{v}.html")
+        remove(getcwd()+name)
+        pass
     except FileNotFoundError:
         pass
-        
-    open(getcwd()+f"/{abosolute}_{v}.html", "w").writelines(base_c)
-
-def create_path(key, info:dict[str, dict[str]], 
-                name_absolute:str, file_name:str):
-    """¿crea directorios? puede ser... es recursivo y complejo
-
-    Args:
-        key (_type_): nombre del menu
-        info (dict[str, dict[str]]): lista general de nombres para el menu
-        name_absolute (str): nombre abosoluto (especie)
-        file_name (str): nombre de arhivo a crear
-    """
-    if type(info[key]) == type(""):
-        pather(list(filter(path.isdir, listdir())), name_absolute, info[key], file_name, key, info)
-    elif type(info[key]) == type({}):
-        chdir("..")
-        c = getcwd()
-        chdir(c+"/"+key)
-        create_path(list(info[key].keys())[0], info[key], name_absolute, key)
-        chdir(c+"/"+file_name)
-        return
-
+    #print("PATH TO SAVE= ",getcwd()+name)
+    open(getcwd()+"/"+name, "w").writelines(base_c)
+    
+def ch_start(level:dict[str], absolute:str, opt:dict[str], num:int, press:bool=False, original:dict[str, dict[str]]=...) -> int:
     try:
-        nxt_key = list(info.keys())[list(info.keys()).index(key)+1]
-        if type(info[nxt_key]) == type({}):
-            files = [nxt_key]
-        else:
-            files = list(filter(path.isdir, listdir()))
-                
-        for i in files:
-            if i in list(filter(path.isdir, listdir())):
-                chdir(getcwd()+"/"+i)
-                create_path(nxt_key, info, name_absolute, i)
-                chdir("..")
+        variant = list(level.keys())[num]
     except IndexError:
-        chdir("..")
-        return 
-                
-
-def saver():
-    """Función para generar los menus de species y choice (sean descritos en desc.json)
-    """
-    from json import load
-    info:dict[str, dict[str]] = load(open(ROOT_GEN+"/data/desc.json", "r"))
-
-    #esto es opcional
-    pather([i for i in list(filter(path.isdir, listdir())) if i in info], list(info.keys())[0], info[list(info.keys())[0]], list(info.keys())[0])
-    del info[list(info.keys())[0]]
-
-    for names in info:
-        chdir(getcwd()+"/"+names)
-        create_path(list(info[names].keys())[0] ,info[names], names, names)
-        chdir("..")
+        return
+    
+    if press and absolute in list(filter(path.isdir, listdir())):
+        base_buttons = [i for i in original if type(original[i]) == type({})]
+        base_variant = [list(original[i].keys())[0] for i in base_buttons]
+        bs = getcwd().split("\\")[-1]
         
-saver()
+        base_buttons.append("def"+bs)
+        parser_file(base_buttons, "Path choice", "chooce a path", base_variant, variant_main=opt)
+        opt[bs] = "Path choice"
+        t = getcwd()
         
+        chdir("..")
+        key = [i.replace(".html", "") for i in list(filter(path.isfile, listdir())) if i.split("_")[0] == getcwd().split("\\")[-1]][0]
+        var = key.split("_")[1]
+        parser_file(list(filter(path.isdir, listdir())), key, original[var], var, variant_main=opt)
+        
+        chdir(t)
+        
+    chdir(getcwd()+"/"+absolute) 
+    tlt = list(filter(path.isdir, listdir()))
+    
+    
+    for i in range(len(tlt)):
+        starter(absolute+"_"+variant, level[variant], variant, opt, level)
+        ch_start(level, tlt[i], opt, num+1)
+    
+    chdir("..")
+    return
+    
+def starter(key:str, desc:dict[str]|str, var:str, main:dict[str], ot):
+    if type(desc) == type({}):
+        ch_start(desc, key.split("_")[1], main, 0, True, ot)
+    elif type(desc) == type(""):
+        file = list(filter(path.isdir, listdir()))
+        parser_file(file, key, desc, var, variant_main=main, variant_base=ot)
+
+chdir(ROOT_GEN+"/out")
+from json import load
+parser_file(FL_TO_COMPILE, "specie", "chooce", "choice", )
+for specie in FL_TO_COMPILE:
+    base_info = load(open(ROOT_GEN+"/data/"+specie+"/desc.json", "r"))
+    ch_start(base_info, specie, MAIN[specie], 0)
+    break
+
 print(getcwd())
