@@ -1,6 +1,6 @@
 #1.0 --- 10/27/2024 || 27/10/2024 By: Z3R0_GT
 #DOCUMENTACIÓN VERSION: 1.0
-from os import listdir, path, getcwd, chdir, remove, mkdir, system
+from os import listdir, path, getcwd, chdir, remove, mkdir
 chdir(getcwd()+"/core")
 
 #CONFIGURACIÓN DEL SISTEMA
@@ -537,22 +537,8 @@ def init() -> dict[str]:
         chdir(ROOT_GEN+"/data")
     return main
 
-#MAINLY_ARCH:dict[str] = init()
+MAINLY_ARCH:dict[str] = init()
 #LINKER
-#
-
-from random import randint
-BAN = ["child", "adult", "young"]
-BAM = ["mainBase", "pather", "uw"]
-MAIN:dict[dict[str]] = {}
-
-for i in FL_TO_COMPILE:
-    if i[0] == "_":
-        i = i[1:]
-    MAIN[i] = {}
-    for im in BAN:
-        MAIN[i][im] = BAM[randint(0, len(BAM)-1)]
-        
 
 def parser_file(files:list[str],
                 title:str,
@@ -623,7 +609,7 @@ def parser_file(files:list[str],
         pass
     #print("PATH TO SAVE= ",getcwd()+name)
     open(getcwd()+"/"+name, "w").writelines(base_c)
-    
+
 def ch_start(level:dict[str], absolute:str, opt:dict[str], num:int, press:bool=False, original:dict[str, dict[str]]=...) -> int:
     try:
         variant = list(level.keys())[num]
@@ -657,7 +643,7 @@ def ch_start(level:dict[str], absolute:str, opt:dict[str], num:int, press:bool=F
     
     chdir("..")
     return
-    
+
 def starter(key:str, desc:dict[str]|str, var:str, main:dict[str], ot):
     if type(desc) == type({}):
         ch_start(desc, key.split("_")[1], main, 0, True, ot)
@@ -670,7 +656,7 @@ from json import load
 parser_file(FL_TO_COMPILE, "specie", "chooce", "choice", )
 for specie in FL_TO_COMPILE:
     base_info = load(open(ROOT_GEN+"/data/"+specie+"/desc.json", "r"))
-    ch_start(base_info, specie, MAIN[specie], 0)
+    ch_start(base_info, specie, MAINLY_ARCH[specie], 0)
     break
 
 print(getcwd())
